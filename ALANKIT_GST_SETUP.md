@@ -12,7 +12,7 @@ This guide explains how to configure and use the Alankit GST Sandbox API for tes
 
 Add the following to your environment variables in the **Vars** section:
 
-```env
+\`\`\`env
 # Alankit GST API - Required Headers
 ALANKIT_SUBSCRIPTION_KEY=ALSND3W3T8r2g7d1h0l6
 GSP_CLIENT_ID=l7xxda1af7c62c6c40449602e5a9f448f2ef
@@ -21,16 +21,16 @@ GSP_USERNAME=MH_NT4.2446
 
 # Optional: Custom base URL (defaults to sandbox)
 GSP_BASE_URL=https://uatapi.alankitgst.com/taxpayerapi/v1.0
-```
+\`\`\`
 
 **Note**: The above values are from the working sandbox test. Update them with your actual credentials.
 
 ## API Endpoints
 
 The Alankit GST Sandbox uses the following base URL:
-```
+\`\`\`
 https://uatapi.alankitgst.com/taxpayerapi/v1.0
-```
+\`\`\`
 
 ### Available Endpoints
 
@@ -58,7 +58,7 @@ https://uatapi.alankitgst.com/taxpayerapi/v1.0
 
 ## Authentication Flow with Encryption
 
-```
+\`\`\`
 ┌─────────────────────────────────────────────────────────────┐
 │                 Secure Authentication Flow                   │
 └─────────────────────────────────────────────────────────────┘
@@ -84,7 +84,7 @@ Step 3: API Operations
   ├─ Send encrypted request with auth token
   ├─ Receive encrypted response
   └─ Decrypt response using SEK
-```
+\`\`\`
 
 ## Encryption Details
 
@@ -121,9 +121,9 @@ Step 3: API Operations
 ### Step-by-Step Testing
 
 1. **Navigate to GST Connection Page**
-   ```
+   \`\`\`
    http://localhost:3000/dashboard/gst-connection
-   ```
+   \`\`\`
 
 2. **Enter Test GSTIN**
    - Use a valid 15-character GSTIN registered on GST Portal
@@ -148,35 +148,35 @@ Step 3: API Operations
 
 For sandbox testing, you can enable debug mode to see encryption details:
 
-```typescript
+\`\`\`typescript
 // In lib/gst-crypto-helper.ts
 const session = createGSTSession(undefined, true) // Debug enabled
-```
+\`\`\`
 
 **⚠️ WARNING**: Never enable debug mode in production!
 
 ## API Call Examples
 
 ### Request OTP
-```bash
+\`\`\`bash
 curl -X POST http://localhost:3000/api/gsp/request-otp \
   -H "Content-Type: application/json" \
   -d '{"gstin": "29AABCT1234F1Z5"}'
-```
+\`\`\`
 
 ### Verify OTP
-```bash
+\`\`\`bash
 curl -X POST http://localhost:3000/api/gsp/verify-otp \
   -H "Content-Type: application/json" \
   -d '{"gstin": "29AABCT1234F1Z5", "otp": "123456"}'
-```
+\`\`\`
 
 ### Check Connection
-```bash
+\`\`\`bash
 curl -X POST http://localhost:3000/api/gsp/check-connection \
   -H "Content-Type: application/json" \
   -d '{"gstin": "29AABCT1234F1Z5"}'
-```
+\`\`\`
 
 ## Troubleshooting
 
@@ -222,11 +222,11 @@ curl -X POST http://localhost:3000/api/gsp/check-connection \
    - Look for `[v0]` prefixed debug messages
 
 4. **Test Redis Storage**
-   ```typescript
+   \`\`\`typescript
    // Check if data is being stored
    const appKey = await redis.get('gst:session:29AABCT1234F1Z5')
    console.log('Stored AppKey:', appKey)
-   ```
+   \`\`\`
 
 ## Security Best Practices
 
@@ -260,11 +260,11 @@ When ready to move to production:
 - Update environment variables
 
 ### 2. Update Configuration
-```env
+\`\`\`env
 # Production settings
 ALANKIT_SUBSCRIPTION_KEY=production_key_here
 GSP_BASE_URL=https://api.alankitgst.com/taxpayerapi/v1.0
-```
+\`\`\`
 
 ### 3. Update Public Key
 - Obtain GST production public key
@@ -318,10 +318,10 @@ GSP_BASE_URL=https://api.alankitgst.com/taxpayerapi/v1.0
 
 The sandbox public key is embedded in `lib/gst-crypto-helper.ts`. For production, obtain the official key from GSTN.
 
-```
+\`\`\`
 -----BEGIN PUBLIC KEY-----
 [Public key is embedded in code]
 -----END PUBLIC KEY-----
-```
+\`\`\`
 
 **Note**: Production public key will be different. Update before going live!

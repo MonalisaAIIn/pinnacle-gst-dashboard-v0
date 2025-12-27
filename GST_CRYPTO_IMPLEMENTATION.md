@@ -11,7 +11,7 @@ The GST Portal requires end-to-end encryption for all API communications using a
 
 ## Architecture
 
-```
+\`\`\`
 ┌─────────────────────────────────────────────────────────────┐
 │                    Authentication Flow                       │
 └─────────────────────────────────────────────────────────────┘
@@ -27,18 +27,18 @@ The GST Portal requires end-to-end encryption for all API communications using a
 5. Decrypt SEK using AppKey (AES-256-ECB)
    ↓
 6. Use SEK to encrypt/decrypt all API requests/responses
-```
+\`\`\`
 
 ## Key Components
 
 ### 1. AppKey Generation
-```typescript
+\`\`\`typescript
 // Generate random 32-byte key (AES-256)
 const appKey = crypto.randomBytes(32).toString("base64")
-```
+\`\`\`
 
 ### 2. RSA Encryption
-```typescript
+\`\`\`typescript
 // Encrypt AppKey with GST's public key
 const encryptedAppKey = crypto.publicEncrypt(
   {
@@ -47,16 +47,16 @@ const encryptedAppKey = crypto.publicEncrypt(
   },
   Buffer.from(appKey, "base64")
 )
-```
+\`\`\`
 
 ### 3. AES Encryption/Decryption
-```typescript
+\`\`\`typescript
 // AES-256-ECB encryption
 const cipher = crypto.createCipheriv("aes-256-ecb", keyBytes, null)
 cipher.setAutoPadding(true)
 let encrypted = cipher.update(plainText, "utf8", "base64")
 encrypted += cipher.final("base64")
-```
+\`\`\`
 
 ## Key Chain
 
@@ -68,7 +68,7 @@ The GST Portal uses a hierarchical key structure:
 
 ### Key Decryption Chain
 
-```
+\`\`\`
 AppKey (your generated key)
   ↓ decrypt
 SEK (from GST Portal)
@@ -76,7 +76,7 @@ SEK (from GST Portal)
 API EK (for specific operations)
   ↓ decrypt/encrypt
 Payload data
-```
+\`\`\`
 
 ## Implementation Files
 
@@ -140,7 +140,7 @@ Integrates crypto functions with API calls:
 
 ### 1. Request OTP
 
-```typescript
+\`\`\`typescript
 // Generate session with encrypted AppKey
 const { appKey, encryptedAppKey } = createGSTSession()
 
@@ -154,11 +154,11 @@ POST /authenticate
 
 // Store AppKey temporarily in Redis
 await redis.setex(`gst:session:{GSTIN}`, 300, appKey)
-```
+\`\`\`
 
 ### 2. Verify OTP
 
-```typescript
+\`\`\`typescript
 // Retrieve stored AppKey
 const appKey = await redis.get(`gst:session:{GSTIN}`)
 
@@ -188,11 +188,11 @@ await redis.setex(`gst:sek:{GSTIN}`, 21600, sek)
 
 // Delete temporary AppKey
 await redis.del(`gst:session:{GSTIN}`)
-```
+\`\`\`
 
 ### 3. Make Encrypted API Call
 
-```typescript
+\`\`\`typescript
 // Retrieve auth token and SEK
 const authToken = await redis.get(`gst:token:{GSTIN}`)
 const sek = await redis.get(`gst:sek:{GSTIN}`)
@@ -208,7 +208,7 @@ Body: { data: encryptedPayload }
 
 // Decrypt response
 const decryptedResponse = decryptPayload(response.data, sek)
-```
+\`\`\`
 
 ## Testing
 
@@ -216,12 +216,12 @@ const decryptedResponse = decryptPayload(response.data, sek)
 
 The sandbox uses the same encryption as production. Test with:
 
-```typescript
+\`\`\`typescript
 // Enable debug mode to see AppKey
 const session = createGSTSession(undefined, true)
 console.log("AppKey:", session.appKey)
 console.log("Encrypted:", session.encryptedAppKey)
-```
+\`\`\`
 
 **⚠️ WARNING**: Only enable debug mode in sandbox. Never in production!
 
